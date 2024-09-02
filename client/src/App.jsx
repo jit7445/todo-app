@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import TodoList from './components/TodoList';
 import Header from './components/Header';
 import { Button } from '@material-tailwind/react';
@@ -10,8 +10,20 @@ const App = () => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef(null);
   const dispatch = useDispatch();
-  const todos = useSelector((state) => state.todos);
+  const [todos_st,setTodos_st]=useState([])
+     const todos= useSelector((state) => state.todos);
 
+  useEffect(()=>{
+    setTodos_st(todos);
+  },[todos])
+useEffect(()=>{
+  const persistedState = localStorage.getItem('reduxState') 
+  ? JSON.parse(localStorage.getItem('reduxState'))
+  : {}
+  console.log("data",persistedState.todos);
+  setTodos_st(persistedState.todos);
+  console.log("todos:",todos_st.todos)
+},[])
   const BASE_URL = "http://localhost:8000"
 
   const onFormSubmit = async (e) => {
@@ -64,7 +76,7 @@ const App = () => {
         </div>
         <div className="w-full md:border-t-[8px] sm:border-t-[5px] border-line rounded-lg" />
         <div className="w-full max-w-3xl flex flex-col flex-grow overflow-y-auto z-40 ">
-          <TodoList todos={todos} onToggle={onToggle} onDelete={onDelete} onEdit={onEdit} />
+          <TodoList todos={todos_st} onToggle={onToggle} onDelete={onDelete} onEdit={onEdit} />
         </div>
       </div>
     </div>
